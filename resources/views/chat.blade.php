@@ -156,7 +156,7 @@
     </div>
 
     <!-- Input Bar -->
-    <div class="w-full bg-gradient-to-t from-white via-white to-transparent pb-6 pt-10 px-4 fixed bottom-0 left-0">
+    <div class="w-full bg-gradient-to-t from-white via-white to-transparent pb-3 pt-10 px-4 fixed bottom-0 left-0">
         <div class="max-w-3xl mx-auto">
             <div class="relative flex items-center bg-[#f0f4f9] rounded-full focus-within:bg-white focus-within:ring-1 focus-within:ring-gray-300 border border-transparent transition-all shadow-sm">
                 <input id="question" type="text" placeholder="Type your question..." class="flex-1 bg-transparent px-6 py-4 focus:outline-none text-gray-700">
