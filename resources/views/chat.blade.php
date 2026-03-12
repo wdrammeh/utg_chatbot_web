@@ -24,6 +24,18 @@
             scroll-behavior: smooth;
         }
 
+        /* Sticky Header */
+        #sticky-header {
+            display: none;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            background-color: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(8px);
+            border-bottom: 1px solid #f3f4f6;
+            transition: all 0.3s ease;
+        }
+
         /* Message Panels */
         .msg-panel {
             max-width: 85%;
@@ -31,7 +43,6 @@
             margin-bottom: 1rem;
             line-height: 1.5;
             font-style: normal !important;
-            /* Force no italics */
         }
 
         .user-panel {
@@ -94,41 +105,32 @@
                 transform: scale(1.2) rotate(180deg);
             }
         }
-
-        /* Skeleton Bars Commented Out as requested */
-        /*
-        .gemini-loader {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            width: 60%;
-        }
-        .shimmer {
-            height: 14px;
-            background: linear-gradient(90deg, #f0f4f9 25%, #d1e3fa 50%, #f0f4f9 75%);
-            background-size: 200% 100%;
-            animation: shimmer 1.5s infinite linear;
-            border-radius: 4px;
-        }
-        */
     </style>
 </head>
 
 <body class="text-[#1f1f1f]">
 
+    <!-- Sticky Header (Visible only when chatting starts) -->
+    <header id="sticky-header" class="px-6 py-3">
+        <div class="max-w-3xl mx-auto flex items-center gap-3 justify-center">
+            <img src="{{ asset('utg-logo.gif') }}" alt="UTG" class="w-8 h-8 object-contain">
+            <span class="font-medium text-lg text-gray-800 tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-purple-500 to-red-400">UTG FAQ Chatbot</span>
+        </div>
+    </header>
+
     <div id="chat-container" class="flex flex-col">
         <div class="max-w-3xl w-full mx-auto px-6 pt-12 pb-32 flex flex-col">
+
             <!-- Welcome Header (Gemini Style) -->
             <div id="welcome-screen" class="welcome-badge flex flex-col items-center mb-16">
                 <div class="mb-6 p-4 rounded-2xl bg-white shadow-sm border border-gray-100">
-                    <!-- Placeholder for UTG Badge -->
                     <img src="{{ asset('utg-logo.gif') }}" alt="UTG" class="w-14 h-14 object-contain">
                 </div>
-                <h1 class="text-3xl md:text-4xl font-medium text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-purple-500 to-red-400 pb-2">
-                    Hello, UTG FAQ Chatbot here!
+                <h1 class="text-3xl md:text-4xl font-medium text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-purple-500 to-red-400 pb-2 text-center">
+                    Hello, I'm UTG FAQ Chatbot
                 </h1>
                 <p class="text-gray-500 mt-4 text-center max-w-md">
-                    How can I help you today? Ask me about courses, admissions, or campus services
+                    How may I help you? Ask me about admissions, academics, tuition or campus services
                 </p>
             </div>
 
@@ -139,17 +141,10 @@
             <div id="loading" class="hidden">
                 <div class="loading-wrapper">
                     <div class="sparkle-icon">
-                        <!-- Gemini-style Sparkle SVG -->
                         <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
                             <path d="M12 2L14.85 9.15L22 12L14.85 14.85L12 22L9.15 14.85L2 12L9.15 9.15L12 2Z" />
                         </svg>
                     </div>
-                    <!-- Skeletons Commented Out -->
-                    <!-- 
-                    <div class="gemini-loader ml-3">
-                        <div class="shimmer w-full"></div>
-                    </div> 
-                    -->
                 </div>
             </div>
         </div>
@@ -159,7 +154,7 @@
     <div class="w-full bg-gradient-to-t from-white via-white to-transparent pb-3 pt-10 px-4 fixed bottom-0 left-0">
         <div class="max-w-3xl mx-auto">
             <div class="relative flex items-center bg-[#f0f4f9] rounded-full focus-within:bg-white focus-within:ring-1 focus-within:ring-gray-300 border border-transparent transition-all shadow-sm">
-                <input id="question" type="text" placeholder="Type your question..." class="flex-1 bg-transparent px-6 py-4 focus:outline-none text-gray-700">
+                <input id="question" type="text" placeholder="Type a message..." class="flex-1 bg-transparent px-6 py-4 focus:outline-none text-gray-700">
                 <button id="sendBtn" class="p-2 mr-3 text-blue-600 disabled:text-gray-400 transition-colors" disabled>
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
                         <path d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z" />
@@ -180,13 +175,21 @@
             const $loading = $('#loading');
             const $sendBtn = $('#sendBtn');
             const $welcome = $('#welcome-screen');
+            const $stickyHeader = $('#sticky-header');
 
             $input.on('input', function() {
                 $sendBtn.prop('disabled', this.value.trim() === '');
             });
 
+            function transitionToChat() {
+                if ($welcome.is(':visible')) {
+                    $welcome.fadeOut(300);
+                    $stickyHeader.slideDown(300);
+                }
+            }
+
             function appendMessage(role, text, isError = false) {
-                if ($welcome.is(':visible')) $welcome.fadeOut(200);
+                transitionToChat();
 
                 const isUser = role === 'user';
                 const panelClass = isUser ? 'user-panel' : (isError ? 'bot-panel error-panel' : 'bot-panel');
@@ -209,6 +212,7 @@
 
                 $input.val('').trigger('input');
                 appendMessage('user', question);
+
                 $loading.removeClass('hidden');
                 $chatContainer.animate({
                     scrollTop: $chatContainer.prop("scrollHeight")
