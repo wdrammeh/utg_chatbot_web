@@ -1,5 +1,7 @@
-# Retrieval-Augmented Chatbot for University FAQs: A Case Study of UTG
+# Retrieval-Based Chatbot for University FAQ: A Case Study of UTG
 
-## Backend
+This is the frontend implementation of a research project.
+
+## The Backend
 
 [UTG Chatbot](https://github.com/wdrammeh/utg_chatbot)
